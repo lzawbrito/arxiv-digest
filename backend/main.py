@@ -11,7 +11,13 @@ from dotenv import load_dotenv
 from loguru import logger
 
 from src.cache import CacheManager
-from src.fetcher import ArxivHTMLCrawler, fetch_arxiv_papers
+from src.exporter import export_author_papers
+from src.fetcher import (
+    ArxivHTMLCrawler,
+    fetch_arxiv_papers,
+    fetch_author_papers,
+    normalize_subscription,
+)
 from src.filter.pipeline import FilterPipeline
 from src.highlighter import AbstractHighlighter
 from src.llm.async_client import AsyncLLMClient
@@ -43,6 +49,7 @@ async def async_main(config: dict) -> None:
     stage2_config = config.get("stage2", {})
     stage3_config = config.get("stage3", {})
     highlight_config = config.get("highlight", {})
+    subscriptions_config = config.get("subscriptions") or {}
 
     # Get API key from environment variable
     api_key = os.getenv("API_KEY", "")
@@ -184,6 +191,31 @@ async def async_main(config: dict) -> None:
         title="lzawbrito's ArXiv Digest",
     )
 
+    # Fetch recent papers by subscribed authors (no LLM filtering — every paper
+    # by a followed author is shown). Kept separate from the digest so a failure
+    # here never blocks the daily digest itself.
+    subscribed_authors = subscriptions_config.get("authors") or []
+    subscribed_names = [normalize_subscription(a)[0] for a in subscribed_authors]
+    lookback_days = subscriptions_config.get("lookback_days", 30)
+    author_papers: list[dict] = []
+    if subscribed_authors:
+        logger.info(f"Fetching recent papers for {len(subscribed_authors)} subscribed authors...")
+        try:
+            author_papers = fetch_author_papers(
+                authors=subscribed_authors,
+                lookback_days=lookback_days,
+                max_per_author=subscriptions_config.get("max_per_author", 25),
+            )
+        except Exception as e:
+            logger.error(f"Failed to fetch subscribed-author papers: {e}")
+
+    export_author_papers(
+        papers=author_papers,
+        authors=subscribed_names,
+        lookback_days=lookback_days,
+        output_path="../frontend/public/authors.json",
+    )
+
     # Print summary
     logger.info("\n" + "=" * 60)
     logger.info("📊 FINAL SUMMARY")
@@ -192,6 +224,7 @@ async def async_main(config: dict) -> None:
     logger.info(f"Stage 1 passed:         {len(results['stage1_passed'])}")
     logger.info(f"Stage 2 passed:         {len(results['stage2_passed'])}")
     logger.info(f"Stage 3 passed:         {len(results['stage3_passed'])}")
+    logger.info(f"Subscribed-author papers: {len(author_papers)}")
     logger.info(f"Output file:            {output_path}")
     logger.info("=" * 60)
 

@@ -169,4 +169,5 @@ backend/config.yaml
 
 # Generated digest file
 frontend/public/digest.json
+frontend/public/authors.json
 frontend/public/history/

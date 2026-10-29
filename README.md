@@ -16,6 +16,7 @@
     -   **Stage 3**: Deep analysis using full paper content from arXiv HTML
 -   **Smart Abstract Highlighting**: Automatically highlights key points in abstracts using LLM
 -   **Rich Paper Analysis**: Extracts novelty, impact, quality scores, and custom fields
+-   **Author Subscriptions**: A separate "Subscribed Authors" tab lists recent papers by authors you follow, straight from the arXiv API (no LLM cost)
 
 ## 📦 Requirements
 
@@ -140,6 +141,14 @@ arxiv:
     # To fetch ALL papers from the field(s) without category filtering:
     # categories: []
     max_results: 0 # 0 = no limit
+
+subscriptions:
+    authors:
+        - "Nathan Seiberg" # name exactly as it appears on arXiv
+        - name: "Meng Cheng" # common name: only match papers in these categories
+          categories: ["cond-mat.str-el", "hep-th"]
+    lookback_days: 30 # only papers first submitted within this window
+    max_per_author: 25 # arXiv API results requested per author
 
 llm:
     model: "deepseek-chat" # LLM model name

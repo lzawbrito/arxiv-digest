@@ -83,9 +83,42 @@ header h1 {
     }
 }
 
-.generated-label {
+.generated-label,
+.updated-label {
     opacity: 0.9;
     font-size: 0.9em;
+}
+
+.view-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--white);
+}
+
+.view-tab {
+    flex: 1;
+    padding: 14px 20px;
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: none;
+    color: var(--secondary-text-color);
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.view-tab:hover {
+    color: var(--accent-color);
+}
+
+.view-tab.active {
+    color: var(--accent-color);
+    border-bottom-color: var(--accent-color);
 }
 
 .controls {
@@ -760,6 +793,11 @@ footer {
 }
 
 @media (max-width: 480px) {
+    .view-tab {
+        padding: 12px 10px;
+        font-size: 0.9em;
+    }
+
     body {
         padding: 5px;
     }

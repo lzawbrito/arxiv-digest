@@ -114,6 +114,13 @@ jobs:
           path: frontend/public/digest.json
           retention-days: 1
 
+      - name: Upload authors.json as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: authors-json
+          path: frontend/public/authors.json
+          retention-days: 1
+
   build-and-deploy:
     needs: generate-digest
     runs-on: ubuntu-latest
@@ -126,6 +133,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: digest-history
+          path: frontend/public/
+        continue-on-error: true
+
+      # Without this file the site just hides the Subscribed Authors tab.
+      - name: Download authors.json artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: authors-json
           path: frontend/public/
         continue-on-error: true
 

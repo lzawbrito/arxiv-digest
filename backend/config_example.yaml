@@ -18,6 +18,23 @@ arxiv:
     max_results: 40 # 0 means no limit
 
 # ============================================
+# Author Subscriptions
+# ============================================
+# Recent papers by these authors appear in the site's "Subscribed Authors" tab,
+# regardless of the LLM filter (no API cost: this uses the plain arXiv API).
+# Use the name exactly as it appears on arXiv. For common names, add
+# "categories" to only match papers cross-listed there, which filters out
+# namesakes in unrelated fields.
+subscriptions:
+    authors: []
+    # authors:
+    #     - Nathan Seiberg
+    #     - name: Meng Cheng
+    #       categories: [cond-mat.str-el, hep-th, quant-ph]
+    lookback_days: 30 # only papers whose first version is at most this old
+    max_per_author: 25 # arXiv API results requested per author
+
+# ============================================
 # LLM Settings
 # ============================================
 llm:

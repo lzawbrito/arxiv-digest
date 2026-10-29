@@ -55,3 +55,16 @@ export function formatDate(isoString: string): string {
         return isoString;
     }
 }
+
+/**
+ * Format date from ISO string as a short calendar date (e.g. "Oct 15, 2026")
+ */
+export function formatShortDate(isoString: string): string {
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return isoString;
+    return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    });
+}

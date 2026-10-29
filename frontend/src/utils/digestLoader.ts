@@ -1,4 +1,5 @@
 import { DigestSchema, type DigestData } from "@/types/digest";
+import { AuthorFeedSchema, type AuthorFeedData } from "@/types/authors";
 
 /**
  * Load and validate digest data from JSON file
@@ -43,5 +44,24 @@ export async function loadHistoryIndex(): Promise<string[]> {
         // Silently fail for history index to allow local development without errors
         console.debug("Could not load history index (running in local/latest-only mode):", error);
         return [];
+    }
+}
+
+/**
+ * Load the subscribed-author feed (authors.json)
+ * Returns null if the file doesn't exist (e.g. local dev before a backend run),
+ * in which case the Authors tab is hidden.
+ */
+export async function loadAuthorFeed(): Promise<AuthorFeedData | null> {
+    try {
+        const response = await fetch("./authors.json");
+        if (!response.ok) {
+            if (response.status === 404) return null;
+            throw new Error(`Failed to fetch author feed: ${response.statusText}`);
+        }
+        return AuthorFeedSchema.parse(await response.json());
+    } catch (error) {
+        console.debug("Could not load author feed:", error);
+        return null;
     }
 }

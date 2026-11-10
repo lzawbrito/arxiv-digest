@@ -71,6 +71,27 @@ header h1 {
     backdrop-filter: blur(5px);
 }
 
+/* Both tabs' header contents are stacked in one grid cell and the inactive one is
+   only hidden, so the pill is always sized to the larger of the two and the header
+   (and the page below it) doesn't change height when switching tabs. */
+.header-controls-stack {
+    display: grid;
+    justify-items: center;
+}
+
+.header-controls-stack > .header-controls {
+    grid-area: 1 / 1;
+}
+
+/* transition: none matters: DateNavigator's buttons use `transition: all`, which
+   would otherwise animate visibility and leave them showing over the other tab's
+   label for 0.2s after switching. */
+.header-controls-stack > .header-controls.inactive,
+.header-controls-stack > .header-controls.inactive * {
+    visibility: hidden;
+    transition: none;
+}
+
 @media (max-width: 600px) {
     .header-controls {
         flex-direction: column;

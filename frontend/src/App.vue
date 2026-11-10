@@ -50,19 +50,30 @@ onMounted(async () => {
     <div v-else-if="digestData" class="container">
         <header>
             <h1>{{ digestData.metadata.title }}</h1>
-            <div v-if="currentView === 'authors' && authorFeed" class="header-controls">
-                <span class="updated-label">
-                    Updated {{ formatDate(authorFeed.metadata.timestamp) }}
-                </span>
-            </div>
-            <div v-else class="header-controls">
-                <span class="generated-label">Generated on</span>
-                <DateNavigator
-                    v-if="currentDigestDate"
-                    :current-date="currentDigestDate"
-                    :available-dates="allAvailableDates"
-                    @change="handleDateChange"
-                />
+            <div class="header-controls-stack">
+                <div
+                    v-if="authorFeed"
+                    class="header-controls"
+                    :class="{ inactive: currentView !== 'authors' }"
+                    :aria-hidden="currentView !== 'authors'"
+                >
+                    <span class="updated-label">
+                        Updated {{ formatDate(authorFeed.metadata.timestamp) }}
+                    </span>
+                </div>
+                <div
+                    class="header-controls"
+                    :class="{ inactive: currentView === 'authors' && !!authorFeed }"
+                    :aria-hidden="currentView === 'authors' && !!authorFeed"
+                >
+                    <span class="generated-label">Generated on</span>
+                    <DateNavigator
+                        v-if="currentDigestDate"
+                        :current-date="currentDigestDate"
+                        :available-dates="allAvailableDates"
+                        @change="handleDateChange"
+                    />
+                </div>
             </div>
         </header>
 
